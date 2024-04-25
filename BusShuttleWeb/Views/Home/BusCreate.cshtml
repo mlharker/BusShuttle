@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "BusCreate";
 }
+
+<style>
+    a{
+        color: green;
+    }
+</style>
 <h2>Bus Create</h2>
 <a asp-action="Bus">Back to List</a>
 <div class="row">
@@ -15,7 +21,7 @@
                 <span asp-validation-for="BusName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input style="background-color:black;"type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

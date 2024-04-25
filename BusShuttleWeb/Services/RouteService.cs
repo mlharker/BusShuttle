@@ -80,7 +80,7 @@ namespace BusShuttleWeb.Services
         {
             db = new DataContext();
             var existingRoute = db.Routes.FirstOrDefault(r => r.Id == id);
-            logger.LogInformation("Existing Route: " + existingRoute);
+            logger.LogInformation("Existing Route: " + id);
             if (existingRoute != null)
             {
                 db.Routes.Remove(existingRoute);

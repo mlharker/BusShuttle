@@ -3,6 +3,36 @@
     ViewData["Title"] = "Bus";
     }
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .dataTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .dataTable th, .dataTable td {
+                padding: 8px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+
+            .dataTable th {
+                background-color: #f2f2f2;
+            }
+
+            .dataTable tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
         .button-container {
             display: flex;
             margin-top: 100px;
@@ -29,39 +59,41 @@
         }
     </style>
 
-    <div class="text-center">
-        <h1 class="display-4">Busses</h1>
-    </div>
+    <body>
+        <div class="text-center">
+            <h1 class="display-4">Busses</h1>
+        </div>
 
-    <div class="button-container">
-        <a asp-action="BusCreate" class="button">Create new bus</a>
-    </div>
+        <div class="button-container">
+            <a asp-action="BusCreate" class="button">Create new bus</a>
+        </div>
 
 
-    <table class="dataTable">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.BusName)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BusName)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BusName)
-                </td>
-                <td>
-                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a>
-                    <form method="post" action='@Url.Action("DeleteBus", "Home")'>
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button style="background-color:red;color:white;" type="submit">Delete Bus</button>
-                    </form>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BusName)
+                    </td>
+                    <td>
+                        <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a>
+                        <form method="post" action='@Url.Action("DeleteBus", "Home")'>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button style="background-color:red;color:white;" type="submit">Delete Bus</button>
+                        </form>
+                    </td>
+                </tr>
         }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </body>

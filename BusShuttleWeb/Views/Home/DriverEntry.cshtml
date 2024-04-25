@@ -1,7 +1,112 @@
-@{
-    ViewData["Title"] = "Entry";
-}
+@model BusShuttleWeb.Models.EntryCreateModel;
 
-<div class="text-center">
-    <h1 class="display-4">Enter Info Below</h1>
-</div>
+<style>
+    /* Center the content vertically and horizontally */
+    html, body {
+        height: 100%;
+        margin: 0;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Additional styling for the form and table */
+    .form-container {
+        margin-bottom: 20px;
+    }
+
+
+    
+</style>
+
+
+<h2>Create Entry</h2>
+
+<body>
+    <form asp-action="CreateEntry">
+        <div class="form-group">
+            <input type="hidden" asp-for="LoopId" value="@Model.LoopId" />
+            <input type="hidden" asp-for="BusId" value="@Model.BusId" />
+            <input type="hidden" asp-for="DriverId" value="@Model.DriverId" />
+            <label asp-for="SelectedStopId" class="control-label">Select Stop</label>
+            <select asp-for="SelectedStopId" class="form-control">
+                @foreach (var route in Model.Routes)
+            {
+                if (Model.Stops != null)
+                {
+                    var stop = Model.Stops.FirstOrDefault(s => s.Id == route.StopId);
+                    if (stop != null)
+                    {
+                <option value="@stop.Id">@stop.Name</option>
+                    }
+                }
+            }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Passengers Boarded</label>
+            <div>
+                <button style="background-color:green;"type="button" class="btn btn-primary" onclick="decrementBoarded()">-</button>
+                <input type="hidden" asp-for="Boarded" id="Boarded" />
+                <span id="boardedCounter">@Model.Boarded</span>
+                <button style="background-color:green;"type="button" class="btn btn-primary" onclick="incrementBoarded()">+</button></p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Passengers Left Behind</label>
+            <div>
+                <button style="background-color:red;" type="button" class="btn btn-primary" onclick="decrementLeftBehind()">-</button>
+                <input type="hidden" asp-for="LeftBehind" id="LeftBehind" />
+                <span id="leftBehindCounter">@Model.LeftBehind</span>
+                <button style="background-color:red;"type="button" class="btn btn-primary" onclick="incrementLeftBehind()">+</button></p>
+            </div>
+        </div>
+
+        <button style="background-color:black;"type="submit" class="btn btn-primary">Submit Entry</button>
+    </form>
+</body>
+
+@section Scripts {
+    <script>
+        function incrementBoarded() {
+            var counter = parseInt(document.getElementById('boardedCounter').innerText);
+            document.getElementById('boardedCounter').innerText = counter + 1;
+            document.getElementById('Boarded').value = counter + 1;
+        }
+
+        function decrementBoarded() {
+            var counter = parseInt(document.getElementById('boardedCounter').innerText);
+            if (counter > 0) {
+                document.getElementById('boardedCounter').innerText = counter - 1;
+                document.getElementById('Boarded').value = counter - 1;
+            }
+        }
+
+        function incrementLeftBehind() {
+            var counter = parseInt(document.getElementById('leftBehindCounter').innerText);
+            document.getElementById('leftBehindCounter').innerText = counter + 1;
+            document.getElementById('LeftBehind').value = counter + 1;
+        }
+
+        function decrementLeftBehind() {
+            var counter = parseInt(document.getElementById('leftBehindCounter').innerText);
+            if (counter > 0) {
+                document.getElementById('leftBehindCounter').innerText = counter - 1;
+                document.getElementById('LeftBehind').value = counter - 1;
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectedStopId = "@Model.SelectedStopId";
+            var select = document.getElementById("selectedStop");
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].value == selectedStopId) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+        });
+    </script>
+}

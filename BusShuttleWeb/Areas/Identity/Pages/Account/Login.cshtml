@@ -13,7 +13,7 @@
     }
 </style>
 
-<div class="row">
+<div>
     <div class="col-md-4">
         <section>
             <form id="account" method="post">
@@ -41,14 +41,12 @@
                 </div>
                 <div>
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                     </p>
                 </div>
             </form>
         </section>
+    </div>
     </div>
 
 @section Scripts {

@@ -2,6 +2,13 @@
 @{
     ViewData["Title"] = "Create loop";
 }
+
+<style>
+    a{
+        color:green;
+    }
+</style>
+
 <h2>Add a new loop</h2>
 <a asp-action="Loop">Back to List</a>
 <div class="row">
@@ -15,7 +22,7 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input style="background-color:black;"type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

@@ -20,14 +20,16 @@ public class HomeController : Controller
     IStopService stopService;
     IRouteService routeService;
     ILoopService loopService;
+    IEntryService entryService;
 
-    public HomeController(ILogger<HomeController> logger, IBusService bService, IStopService stService, IRouteService rService, ILoopService lService)
+    public HomeController(ILogger<HomeController> logger, IBusService bService, IStopService stService, IRouteService rService, ILoopService lService, IEntryService eService)
     {
         _logger = logger;
         this.busService = bService;
         this.stopService = stService;
         this.routeService = rService;
         this.loopService = lService;
+        this.entryService = eService;
     }
 
     public IActionResult Index()
@@ -63,15 +65,20 @@ public class HomeController : Controller
         return View(viewModel);
     }
 
-    [Authorize(Policy = "DriverRequired")]
-    public IActionResult DriverEntry()
-    {
-        return View();
-    }
-
     public IActionResult Entry()
     {
-        return View();
+        ViewBag.Loops = loopService.getAllLoops();
+        var entries = entryService.getAllEntries().ToList();
+        var viewModels = entries.Select(entry =>
+        {
+            var loop = loopService.getLoopById(entry.LoopId);
+            var stop = stopService.findStopById(entry.StopId);
+            var bus = busService.findBusById(entry.BusId);
+
+            return EntryViewModel.FromEntry(entry, loop, stop, bus);
+        }).ToList();
+
+        return View(viewModels);
     }
 
     [Authorize(Policy = "ManagerRequired")]
@@ -305,6 +312,61 @@ public class HomeController : Controller
             loopService.deactivateLoop(loop);
         }
         return RedirectToAction("Loop");
+    }
+
+    public IActionResult DriverEntry(int loopId, int busId, int driverId)
+    {
+        var routes = routeService.getRoutesByLoopId(loopId);
+        var stops = stopService.getAllStops();
+        var viewModel = EntryCreateModel.FromData(stops, routes, loopId, busId, driverId);
+
+        var existingEntry = entryService.getEntryForLoopBusDriver(loopId, busId, driverId);
+        if (existingEntry != null)
+        {
+            // Find the index of the stop in the route
+            var stopIndex = viewModel.Routes.FindIndex(r => r.StopId == existingEntry.StopId);
+            if (stopIndex != -1 && stopIndex + 1 < viewModel.Routes.Count)
+            {
+                // Set the selected stop to the next stop in the route
+                viewModel.SelectedStopId = viewModel.Routes[stopIndex + 1].StopId;
+            }
+        }
+
+        _logger.LogInformation("Selected: " + viewModel.SelectedStopId);
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult CreateEntry([Bind("Boarded,LeftBehind,BusId,DriverId,LoopId,SelectedStopId")] EntryCreateModel entryModel)
+    {
+        entryService.createNewEntry(
+            DateTime.Now,
+            entryModel.Boarded,
+            entryModel.LeftBehind,
+            entryModel.BusId,
+            entryModel.DriverId,
+            entryModel.LoopId,
+            entryModel.SelectedStopId
+        );
+
+        var routes = routeService.getRoutesByLoopId(entryModel.LoopId);
+        _logger.LogInformation("SelectedStopId: " + entryModel.SelectedStopId);
+
+        var nextStopIndex = routes.FindIndex(r => r.StopId == entryModel.SelectedStopId) + 1;
+        if (nextStopIndex < routes.Count)
+        {
+            entryModel.SelectedStopId = routes[nextStopIndex].StopId;
+        }
+
+        return RedirectToAction("DriverEntry", new
+        {
+            loopId = entryModel.LoopId,
+            busId = entryModel.BusId,
+            driverId = entryModel.DriverId,
+            selectedStopId = entryModel.SelectedStopId
+        });
     }
 
 
