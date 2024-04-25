@@ -17,11 +17,13 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
 
     IBusService busService;
+    IStopService stopService;
 
-    public HomeController(ILogger<HomeController> logger, IBusService bService)
+    public HomeController(ILogger<HomeController> logger, IBusService bService, IStopService stService)
     {
         _logger = logger;
         this.busService = bService;
+        this.stopService = stService;
     }
 
     public IActionResult Index()
@@ -56,11 +58,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    [Authorize(Policy = "ManagerRequired")]
-    public IActionResult Stop()
-    {
-        return View();
-    }
+
     [Authorize(Policy = "ManagerRequired")]
     public IActionResult Route()
     {
@@ -114,6 +112,65 @@ public class HomeController : Controller
     {
         busService.UpdateBusById(id, bus.BusName);
         return RedirectToAction("Bus");
+    }
+
+    [Authorize(Policy = "ManagerRequired")]
+    public IActionResult Stop()
+    {
+        var stops = stopService.getAllStops(); 
+        var stopViewModels = stops.Select(stop => new StopViewModel
+        {
+            Id = stop.Id,
+            Name = stop.Name
+
+        }).ToList();
+        
+        return View(stopViewModels);
+    }
+
+    public IActionResult StopEdit([FromRoute] int id)
+    {
+        var stopEditModel =  new StopEditModel();
+        var stop = stopService.findStopById(id);
+
+        stopEditModel = StopEditModel.FromStop(stop);
+        return View(stopEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult StopEdit(int id, [Bind("Name")] StopEditModel stop)
+    {
+        stopService.UpdateStopById(id, stop.Name);
+        return RedirectToAction("Stop");
+    }
+
+
+    public IActionResult StopCreate()
+    {
+        var stopCreateModel = StopCreateModel.NewStop(stopService.GetLastStopId());
+        return View(stopCreateModel);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult StopCreate(int id, [Bind("Name,Latitude,Longitude")] StopCreateModel stop)
+    {
+        stopService.CreateNewStop(id, stop.Name, stop.Latitude, stop.Longitude);
+        return RedirectToAction("Stop");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult StopDelete(int id)
+    {
+        var stop = stopService.findStopById(id);
+        if (stop != null)
+        {
+            stopService.deleteStop(id);
+        }
+        return RedirectToAction("Stop");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

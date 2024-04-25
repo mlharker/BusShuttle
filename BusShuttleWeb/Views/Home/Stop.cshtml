@@ -1,3 +1,4 @@
+@model IEnumerable<BusShuttleWeb.Models.StopViewModel>
 @{
     ViewData["Title"] = "Stop";
 }
@@ -5,3 +6,33 @@
 <div class="text-center">
     <h1 class="display-4">Stops</h1>
 </div>
+
+<a asp-action="StopCreate" class="button">Create new stop</a>
+
+<table class="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="StopEdit" asp-route-id="@item.Id">Edit</a> 
+                    <form method="post" action='@Url.Action("StopDelete", "Home")'>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit">Delete Stop</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
