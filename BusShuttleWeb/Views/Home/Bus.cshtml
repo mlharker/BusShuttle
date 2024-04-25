@@ -1,0 +1,30 @@
+@model IEnumerable<BusShuttleWeb.Models.BusViewModel>
+@{
+    ViewData["Title"] = "Bus";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Busses</h1>
+</div>
+
+<a asp-action="BusCreate" class="button">Create new bus</a>
+
+<table class="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BusName)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BusName)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

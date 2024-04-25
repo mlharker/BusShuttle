@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Driver";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Manager Actions</h1>
+</div>
+
+<style>
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .button {
+        width: 200px;
+        height: 50px;
+        margin: 10px;
+        font-size: 18px;
+        border: none;
+        background-color: #010801;
+        color: white;
+        cursor: pointer;
+        border-radius: 8px;
+        align-content: center;
+        text-align: center;
+    }
+</style>
+
+<body>
+
+<div class="button-container">
+    <a class="button" asp-area = "" asp-controller="Home" asp-action="Bus">Busses</a>
+    <a class="button" asp-area = "" asp-controller="Home" asp-action="Entry">Entries</a>
+    <a class="button" asp-area = "" asp-controller="Home" asp-action="Route">Routes</a>
+    <a class="button" asp-area = "" asp-controller="Home" asp-action="Stop">Stops</a>
+    <a class="button" asp-area = "" asp-controller="Home" asp-action="Loop">Loops</a>
+</div>
+
+</body>
