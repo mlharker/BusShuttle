@@ -1,7 +1,32 @@
+@model BusShuttleWeb.Models.DriverLoopViewModel
 @{
-    ViewData["Title"] = "DriverChoose";
+    ViewData["Title"] = "DriverLoop";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Choose Bus and Loop</h1>
+<h2>Driver Page</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="DriverCreateEntry">
+            <div class="form-group">
+                <label for="loopId">What loop will you be on?</label>
+                <select class="form-control" id="loopId" name="loopId">
+                    @foreach (var loop in Model.Loops)
+                    {
+                    <option value="@loop.Id">@loop.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="busId">What is your bus number?</label>
+                <select class="form-control" id="busId" name="busId">
+                    @foreach (var bus in Model.Busses)
+                    {
+                    <option value="@bus.Id">@bus.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Start</button>
+        </form>
+    </div>
 </div>

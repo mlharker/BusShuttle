@@ -8,33 +8,65 @@
         <h1 class="display-4">Loops</h1>
     </div>
 
-
-    <a asp-action="LoopCreate" class="button">Create new loop</a>
-
-    <table class="dataTable">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    <a asp-action="LoopEdit" asp-route-id="@item.Id">Edit</a>
-                    <form method="post" action='@Url.Action("DeleteLoop", "Home")'>
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit">Delete Loop</button>
-                    </form>
-                </td>
-            </tr>
+    <style>
+        .button-container {
+            display: flex;
+            margin-top: 100px;
         }
-        </tbody>
-    </table>
+
+        .button {
+            width: 150px;
+            height: 50px;
+            margin: 25px;
+            font-size: 18px;
+            border: none;
+            background-color: #010801;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            align-content: center;
+            text-align: center;
+        }
+
+        a {
+            color: green;
+        }
+
+            a:hover {
+                color: green;
+            }
+    </style>
+
+    <div class="button-container">
+        <a asp-action="LoopCreate" class="button">Create new loop</a>
+    </div>
+
+    <body>
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+        {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        <a asp-action="LoopEdit" asp-route-id="@item.Id">Edit</a>
+                        <form method="post" action='@Url.Action("DeleteLoop", "Home")'>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button style="background-color:red;color:white;" type="submit">Delete Loop</button>
+                        </form>
+                    </td>
+                </tr>
+        }
+            </tbody>
+        </table>
+    </body>

@@ -56,7 +56,11 @@ public class HomeController : Controller
     [Authorize(Policy = "DriverRequired")]
     public IActionResult DriverLoop()
     {
-        return View();
+        var loops = loopService.getAllLoops();
+        var busses = busService.getAllBusses();
+
+        var viewModel = DriverLoopViewModel.FromData(loops, busses);
+        return View(viewModel);
     }
 
     [Authorize(Policy = "DriverRequired")]
