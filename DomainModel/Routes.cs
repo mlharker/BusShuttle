@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DomainModel
 {
-     public class Route
+     public class Routes
      {
           [Key]
           public int Id {get; set;} 
@@ -17,23 +17,23 @@ namespace DomainModel
 
           public Stop Stop {get; set;}
 
-          public Route()
+          public Routes()
           {
                
           }
 
-          public Route(int id, int order)
+          public Routes(int id, int order)
           {
                Id = id;
                Order = order;
           }
 
-          public Route(int order)
+          public Routes(int order)
           {
                Order = order;
           }
 
-          public Route(Route Route)
+          public Routes(Routes Route)
           {
                Id = Route.Id;
                Order = Route.Order;

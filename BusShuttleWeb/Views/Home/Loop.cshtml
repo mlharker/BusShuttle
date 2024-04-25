@@ -1,7 +1,40 @@
-@{
-    ViewData["Title"] = "Loop";
-}
+@model IEnumerable<BusShuttleWeb.Models.LoopViewModel>
 
-<div class="text-center">
-    <h1 class="display-4">Loops</h1>
-</div>
+    @{
+    ViewData["Title"] = "Loop";
+    }
+
+    <div class="text-center">
+        <h1 class="display-4">Loops</h1>
+    </div>
+
+
+    <a asp-action="LoopCreate" class="button">Create new loop</a>
+
+    <table class="dataTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="LoopEdit" asp-route-id="@item.Id">Edit</a>
+                    <form method="post" action='@Url.Action("DeleteLoop", "Home")'>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit">Delete Loop</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>

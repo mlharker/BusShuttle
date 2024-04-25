@@ -11,7 +11,7 @@ namespace DomainModel
 
         public DbSet<Driver> Driver {get; set;}
 
-        public DbSet<Route> Route {get; set;}
+        public DbSet<Routes> Routes {get; set;}
 
         public DbSet<Stop> Stop {get; set;}
         

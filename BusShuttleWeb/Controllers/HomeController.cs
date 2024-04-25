@@ -18,12 +18,16 @@ public class HomeController : Controller
 
     IBusService busService;
     IStopService stopService;
+    IRouteService routeService;
+    ILoopService loopService;
 
-    public HomeController(ILogger<HomeController> logger, IBusService bService, IStopService stService)
+    public HomeController(ILogger<HomeController> logger, IBusService bService, IStopService stService, IRouteService rService, ILoopService lService)
     {
         _logger = logger;
         this.busService = bService;
         this.stopService = stService;
+        this.routeService = rService;
+        this.loopService = lService;
     }
 
     public IActionResult Index()
@@ -48,22 +52,24 @@ public class HomeController : Controller
     {
         return View();
     }
-    
-    public IActionResult Entry()
-    {
-        return View();
-    }
-    [Authorize(Policy = "ManagerRequired")]
-    public IActionResult Loop()
+
+    [Authorize(Policy = "DriverRequired")]
+    public IActionResult DriverLoop()
     {
         return View();
     }
 
-    [Authorize(Policy = "ManagerRequired")]
-    public IActionResult Route()
+    [Authorize(Policy = "DriverRequired")]
+    public IActionResult DriverEntry()
     {
         return View();
     }
+
+    public IActionResult Entry()
+    {
+        return View();
+    }
+
     [Authorize(Policy = "ManagerRequired")]
         public IActionResult Manager()
     {
@@ -172,6 +178,132 @@ public class HomeController : Controller
         }
         return RedirectToAction("Stop");
     }
+
+    [Authorize(Policy = "ManagerRequired")]
+    public IActionResult Routes()
+    {
+        var viewModel = new RouteViewModel
+        {
+            Loops = loopService.getAllLoops(),
+            Routes = new List<Routes>()
+        };
+        return View(viewModel);
+    }
+
+
+    [Authorize(Policy = "ManagerRequired")]
+    [HttpPost]
+    public IActionResult Routes(int selectedLoopId)
+    {
+        var loops = loopService.getActiveLoops();
+        var stops = stopService.getActiveStops();
+        var selectedLoop = loopService.getLoopById(selectedLoopId);
+        var routes = routeService.getRoutesByLoopId(selectedLoopId);
+        var viewModel = RouteViewModel.FromLoopID(routes, loops, selectedLoop, stops);
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult CreateRoute(int selectedLoopId, int selectStopId)
+    {
+        var loops = loopService.getActiveLoops();
+        var stops = stopService.getActiveStops();
+        var selectedLoop = loopService.getLoopById(selectedLoopId);
+        var routes = routeService.getRoutesByLoopId(selectedLoopId);
+        var newOrder = routes.Count + 1;
+        routeService.CreateNewRoute(newOrder, selectedLoopId, selectStopId);
+        return RedirectToAction("Routes");
+    }
+
+
+    [HttpPost]
+    public IActionResult MoveRouteUp(int selectedLoopId, int routeId)
+    {
+        var loops = loopService.getActiveLoops();
+        var stops = stopService.getActiveStops();
+        var selectedLoop = loopService.getLoopById(selectedLoopId);
+        var routes = routeService.getRoutesByLoopId(selectedLoopId);
+        routeService.IncreaseRouteOrder(routeId);
+        return RedirectToAction("Routes");
+    }
+
+
+    [HttpPost]
+    public IActionResult MoveRouteDown(int selectedLoopId, int routeId)
+    {
+        var loops = loopService.getActiveLoops();
+        var stops = stopService.getActiveStops();
+        var selectedLoop = loopService.getLoopById(selectedLoopId);
+        var routes = routeService.getRoutesByLoopId(selectedLoopId);
+        routeService.DecreaseRouteOrder(routeId);
+        return RedirectToAction("Routes");
+    }
+
+    [HttpPost]
+    public IActionResult DeleteRoute(int routeId)
+    {
+        routeService.DeleteRoute(routeId);
+        return RedirectToAction("Routes");
+    }
+
+    [Authorize(Policy = "ManagerRequired")]
+    public IActionResult Loop()
+    {
+        var activeLoops = loopService.getActiveLoops();
+        var loopViewModels = activeLoops.Select(loop => new LoopViewModel
+        {
+            Id = loop.Id,
+            Name = loop.Name
+        }).ToList();
+
+        return View(loopViewModels);
+    }
+
+    public IActionResult LoopEdit([FromRoute] int id)
+    {
+        var loopEditModel = new LoopEditModel();
+        var loop = loopService.getLoopById(id);
+
+        loopEditModel = LoopEditModel.FromLoop(loop);
+        return View(loopEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult LoopEdit(int id, [Bind("Name")] LoopEditModel loop)
+    {
+        loopService.UpdateLoopById(id, loop.Name);
+        return RedirectToAction("Loop");
+    }
+
+    public IActionResult LoopCreate()
+    {
+        var loopCreateModel = LoopCreateModel.NewLoop(loopService.GetAmountOfLoops());
+        return View(loopCreateModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult LoopCreate(int id, [Bind("Name")] LoopCreateModel loop)
+    {
+        loopService.CreateNewLoop(id, loop.Name);
+        return RedirectToAction("Loop");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteLoop(int id)
+    {
+        var loop = loopService.getLoopById(id); // Retrieve loop from database
+        if (loop != null)
+        {
+            loop.IsActive = false;
+            loopService.deactivateLoop(loop);
+        }
+        return RedirectToAction("Loop");
+    }
+
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

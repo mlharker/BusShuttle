@@ -59,7 +59,14 @@ namespace BusShuttleWeb.Services
         {
             logger.LogInformation("Getting total amount of stops...");
             db = new DataContext();
-            return db.Stop.Max(x=>x.Id);
+            if (db.Stop.Count() > 0)
+            {
+                return db.Stop.Max(x => x.Id);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public void CreateNewStop(int id, string name, double lat, double lon)

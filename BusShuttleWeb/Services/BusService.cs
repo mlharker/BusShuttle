@@ -75,7 +75,15 @@ namespace BusShuttleWeb.Services
         {
             logger.LogInformation("Getting total amount of busses...");
             db = new DataContext();
-            return db.Bus.Max(x => x.Id);
+            if (db.Bus.Count() > 0 )
+            {
+                return db.Bus.Max(x => x.Id);
+            }
+            else
+            {
+                return 0;
+            }
+            
         }
 
         public void CreateNewBus(int id, string name)

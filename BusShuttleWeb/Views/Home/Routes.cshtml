@@ -1,0 +1,81 @@
+@model BusShuttleWeb.Models.RouteViewModel
+@{
+    ViewData["Title"] = "Routes";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Route</h1>
+</div>
+
+
+@using (Html.BeginForm("Routes", "Home", FormMethod.Post))
+{
+<div>
+    @Html.DropDownList("selectedLoopId", new SelectList(Model.Loops, "Id", "Name"), "Select Loop", new { onchange = "if(this.value != '') this.form.submit();" })
+</div>
+
+}
+
+@if (Model.Stops != null && Model.Stops.Any())
+{
+@using (Html.BeginForm("CreateRoute", "Home", FormMethod.Post))
+    {
+<div>
+    @Html.DropDownList("selectStopId", new SelectList(Model.Stops, "Id", "Name"), "Select Stop")
+    <button type="submit">Assign</button>
+    <input type="hidden" name="selectedLoopId" value="@Model.SelectedLoop.Id" />
+</div>
+    }
+}
+
+
+<table class="dataTable">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Stop
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Routes.OrderBy(route => route.Order))
+        {
+        <tr>
+            <td>
+                @using (Html.BeginForm("MoveRouteUp", "Home", FormMethod.Post))
+                    {
+                <input type="hidden" name="routeId" value="@item.Id" />
+                <input type="hidden" name="selectedLoopId" value="@Model.SelectedLoop.Id" />
+                <button type="submit">Move Up</button>
+
+                    }
+
+                @using (Html.BeginForm("MoveRouteDown", "Home", FormMethod.Post))
+                    {
+                <input type="hidden" name="routeId" value="@item.Id" />
+                <input type="hidden" name="selectedLoopId" value="@Model.SelectedLoop.Id" />
+                <button type="submit">Move Down</button>
+                    }
+
+            </td>
+            <td>
+                @if (Model.Stops != null)
+                    {
+                        var stop = Model.Stops.FirstOrDefault(s => s.Id == item.StopId);
+                        if (stop != null)
+                        {
+                @stop.Name
+                        }
+                    }
+                <form method="post" action='@Url.Action("DeleteRoute", "Home")'>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@item.Id" />
+                    <button type="submit">Delete</button>
+                    </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
