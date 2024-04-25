@@ -1,5 +1,6 @@
 using DomainModel;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 namespace BusShuttleWeb.Services
 {
     public class BusService : IBusService
@@ -65,16 +66,16 @@ namespace BusShuttleWeb.Services
         
             if (existingBus != null)
             {
-                existingBus.IsActive = false;
+                db.Bus.Remove(existingBus);
                 db.SaveChanges();
             }
         }
 
-        public int GetAmountOfBusses()
+        public int getLastIdNumber()
         {
             logger.LogInformation("Getting total amount of busses...");
             db = new DataContext();
-            return db.Bus.Count();
+            return db.Bus.Max(x => x.Id);
         }
 
         public void CreateNewBus(int id, string name)

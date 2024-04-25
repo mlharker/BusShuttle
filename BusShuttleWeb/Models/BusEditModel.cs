@@ -6,7 +6,7 @@ using DomainModel;
 
 namespace BusShuttleWeb.Models
 {
-    public class EditBusModel
+    public class BusEditModel
     {
        
         public int Id {get; set;}
@@ -15,9 +15,9 @@ namespace BusShuttleWeb.Models
         public string BusName {get; set;}
 
 
-        public static EditBusModel FromBus(Bus bus)
+        public static BusEditModel FromBus(Bus bus)
         {
-            return new EditBusModel
+            return new BusEditModel
             {
                 Id = bus.Id,
                 BusName = bus.Name,

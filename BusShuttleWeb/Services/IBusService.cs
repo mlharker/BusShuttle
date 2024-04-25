@@ -14,7 +14,7 @@ namespace BusShuttleWeb.Services
         
         public void deactivateBus(int id);
 
-        public int GetAmountOfBusses();
+        public int getLastIdNumber();
 
         public void CreateNewBus(int id, string name);
     }

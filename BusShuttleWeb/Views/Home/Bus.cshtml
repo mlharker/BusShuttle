@@ -24,6 +24,14 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.BusName)
                 </td>
+                <td>
+                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a> 
+                    <form method="post" action='@Url.Action("DeleteBus", "Home")'>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit">Delete Bus</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

@@ -14,9 +14,9 @@ namespace BusShuttleWeb.Models
         [StringLength(60, MinimumLength = 3)]
         public string BusName {get; set;}
 
-        public static BusCreateModel NewBus(int amountOfBusses)
+        public static BusCreateModel NewBus(int lastId)
         {
-            var newId = amountOfBusses + 1;
+            var newId = lastId + 1;
 
             return new BusCreateModel
             {

@@ -1,11 +1,14 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using BusShuttleWeb.Models;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using BusShuttleWeb.Services;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using BusShuttleWeb.Models;
 using DomainModel;
+using BusShuttleWeb.Services;
 
 namespace BusShuttleWeb.Conrollers;
 
@@ -71,7 +74,7 @@ public class HomeController : Controller
 
     public IActionResult BusCreate()
     {
-        var busCreateModel = BusCreateModel.NewBus(busService.GetAmountOfBusses());
+        var busCreateModel = BusCreateModel.NewBus(busService.getLastIdNumber());
         return View(busCreateModel);
     }
 
@@ -80,6 +83,36 @@ public class HomeController : Controller
     public IActionResult BusCreate(int id, [Bind("BusName")] BusCreateModel bus)
     {
         busService.CreateNewBus(id, bus.BusName);
+        return RedirectToAction("Bus");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteBus(int id)
+    {
+        var bus = busService.findBusById(id);
+        if (bus != null)
+        {
+            busService.deactivateBus(id);
+        }
+        return RedirectToAction("Bus");
+    }
+
+
+    public IActionResult BusEdit([FromRoute] int id)
+    {
+        var busEditModel =  new BusEditModel();
+        var bus = busService.findBusById(id);
+        _logger.LogInformation("Bus" + bus);
+        busEditModel = BusEditModel.FromBus(bus);
+        return View(busEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult BusEdit(int id, [Bind("BusName")] BusEditModel bus)
+    {
+        busService.UpdateBusById(id, bus.BusName);
         return RedirectToAction("Bus");
     }
 
