@@ -63,7 +63,7 @@ namespace BusShuttleWeb.Services
 
             if (existingLoop != null)
             {
-                existingLoop.IsActive = false;
+                db.Loop.Remove(existingLoop);
                 db.SaveChanges();
             }
 
@@ -80,8 +80,8 @@ namespace BusShuttleWeb.Services
         {
             logger.LogInformation("Creating new loop with ID: {Id}", id);
             db = new DataContext();
-            var totalLoops = db.Loop.Count();
-            db.Add(new Loop { Id = totalLoops + 1, Name = name });
+            var maxLoops = db.Loop.Max(x => x.Id);
+            db.Add(new Loop { Id = maxLoops + 1, Name = name });
             db.SaveChanges();
         }
     }

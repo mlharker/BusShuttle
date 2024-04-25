@@ -34,6 +34,7 @@ builder.Services.AddScoped<IBusService, BusService>();
 builder.Services.AddScoped<IStopService, StopService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<ILoopService, LoopService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

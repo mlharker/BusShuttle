@@ -79,8 +79,8 @@ namespace BusShuttleWeb.Services
         public void DeleteRoute(int id) 
         {
             db = new DataContext();
-            var existingRoute = db.Routes.FirstOrDefault(s => s.Id == id);
-
+            var existingRoute = db.Routes.FirstOrDefault(r => r.Id == id);
+            logger.LogInformation("Existing Route: " + existingRoute);
             if (existingRoute != null)
             {
                 db.Routes.Remove(existingRoute);
